@@ -9,7 +9,7 @@
 sleep=300
 
 # https://openweathermap.org/api
-api_key="dbe22ea9bf28d71db957c02fed99f21d"
+api_key="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 # http://openweathermap.org/help/city_list.txt
 city="504341"
 format="metric"
