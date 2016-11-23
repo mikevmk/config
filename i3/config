@@ -1,0 +1,263 @@
+# i3 config file (v4)
+#
+# 2013-2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+### Variables
+# modifiers
+set $super Mod4
+set $alt Mod1
+
+# workspaces
+set $ws1 1: web
+set $ws2 2: term
+set $ws3 3: remote
+set $ws4 4
+set $ws5 5: msgs
+set $ws6 6: virt
+set $ws7 7: games
+set $ws8 8
+set $ws9 9: spotify
+set $ws0 10
+
+# term
+# https://bugs.launchpad.net/ubuntu/+source/rxvt-unicode/+bug/1376105
+#set $term rxvt-unicode -si -sw
+set $term urxvtc -si -sw
+
+### Appearance
+# font for window titles. ISO 10646 = Unicode
+font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+
+# Use Mouse+$super to drag floating windows to their wanted position
+floating_modifier $super
+
+# No border for new windows
+new_window none
+
+# Tabs as default layout
+workspace_layout tabbed
+
+### Basic controls
+# Move workspace to another monitor with Super+x
+bindsym $super+x move workspace to output right
+
+# kill focused window
+bindsym $alt+x kill
+
+# change focus
+bindsym $super+Left focus left
+bindsym $super+Down focus down
+bindsym $super+Up focus up
+bindsym $super+Right focus right
+
+# move focused window
+bindsym $super+Shift+Left move left
+bindsym $super+Shift+Down move down
+bindsym $super+Shift+Up move up
+bindsym $super+Shift+Right move right
+
+# split in horizontal orientation
+bindsym $super+h split h
+
+# split in vertical orientation
+bindsym $super+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $super+f fullscreen
+
+# change container layout (stacked, tabbed, default)
+bindsym $super+s layout stacking
+bindsym $super+w layout tabbed
+bindsym $super+e layout default
+
+# toggle tiling / floating
+bindsym $super+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $super+space focus mode_toggle
+
+# focus the parent container
+#bindsym $super+a focus parent
+
+# focus the child container
+#bindcode $super+d focus child
+
+# Border toggle
+bindsym $super+t border toggle
+
+# switch to workspace
+bindsym $super+1 workspace $ws1
+bindsym $super+2 workspace $ws2
+bindsym $super+3 workspace $ws3
+bindsym $super+4 workspace $ws4
+bindsym $super+5 workspace $ws5
+bindsym $super+6 workspace $ws6
+bindsym $super+7 workspace $ws7
+bindsym $super+8 workspace $ws8
+bindsym $super+9 workspace $ws9
+bindsym $super+0 workspace $ws0
+
+# move focused container to workspace
+bindsym $super+Shift+exclam move container to workspace $ws1
+bindsym $super+Shift+at move container to workspace $ws2
+bindsym $super+Shift+numbersign move container to workspace $ws3
+bindsym $super+Shift+dollar move container to workspace $ws4
+bindsym $super+Shift+percent move container to workspace $ws5
+bindsym $super+Shift+asciicircum move container to workspace $ws6
+bindsym $super+Shift+ampersand move container to workspace $ws7
+bindsym $super+Shift+asterisk move container to workspace $ws8
+bindsym $super+Shift+parenleft move container to workspace $ws9
+bindsym $super+Shift+parenright move container to workspace $ws0
+
+# Super+(Shift)+PgUp/PgDown
+bindsym $super+Next workspace next
+bindsym $super+Prior workspace prev
+bindsym $super+Shift+Next move window to workspace next
+bindsym $super+Shift+Prior move window to workspace prev
+
+# resize window (you can also use the mouse for that)
+bindsym $super+r mode "resize"
+mode "resize" {
+        bindsym Right resize shrink width 10 px or 10 ppt
+        bindsym Up resize grow height 10 px or 10 ppt
+        bindsym Down resize shrink height 10 px or 10 ppt
+        bindsym Left resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+# reload the configuration file
+bindsym $super+Shift+C reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $super+Shift+R restart
+# exit i3 (logs you out of your X session)
+#bindsym $super+Shift+E exit
+bindsym $super+Shift+E exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+
+### Controls with external payload
+# start a terminal
+#bindsym $super+Return exec i3-sensible-terminal
+bindsym $super+Return exec $term
+
+# start dmenu
+bindsym $super+d exec dmenu_run -b -i -l 20 -p 'IIYCK: ' -nb '#000000' -nf '#FFFFFF' -sb '#848484' -sf '#000000'
+
+# Adjust volume with Pulseaudio
+bindsym XF86AudioRaiseVolume exec pactl -- set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo +2% && killall -USR1 i3status
+bindsym XF86AudioLowerVolume exec pactl -- set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo -2% && killall -USR1 i3status
+bindsym XF86AudioMute exec pactl set-sink-mute alsa_output.pci-0000_00_1b.0.analog-stereo toggle
+bindsym XF86AudioMicMute exec pactl set-source-mute alsa_input.pci-0000_00_1b.0.analog-stereo toggle
+# Advanced sound control panel
+bindsym XF86Calculator exec pavucontrol
+
+# Brightness
+bindsym XF86MonBrightnessDown exec brightness decrease 200
+bindsym XF86MonBrightnessUp exec brightness increase 200
+
+# Lock
+#bindsym XF86ScreenSaver exec i3lock -c 000000 -e
+#bindsym XF86Sleep exec i3lock -c 000000 -e
+bindsym XF86MyComputer exec i3lock_wrapper
+
+# Screenshots
+# --release makes scrot --select work
+bindsym --release Print exec scrot_wrapper region
+bindsym $super+Print exec scrot_wrapper window
+bindsym $super+Shift+Print exec scrot_wrapper root
+
+# Process URIs and text from clipboard
+bindsym $super+g exec process_text
+
+# GPG
+bindsym $super+c exec process_gpg
+
+### i3bar/i3status config
+bar {
+        status_command i3status_wrapper
+        position bottom
+        font pango:Ubuntu Mono 11
+}
+
+### Per window config
+# skype is "browser" too OMFG
+#assign [window_role="browser"] $ws1
+assign [class="^chromium-browser$"] $ws1
+assign [class="^Firefox$"] $ws1
+assign [class="^skypeforlinux$"] $ws5
+assign [class="^Skype$"] $ws5
+assign [class="^Telegram$"] $ws5
+#assign [class="^(U|u)pwork$"] $ws5
+assign [class="^Viber"] $ws5
+assign [class="^qTox"] $ws5
+assign [class="^TeamViewer"] $ws3
+# gambler.ru java game
+assign [class="^gclient-GClientMain$"] $ws7
+
+for_window [class="^TeamViewer$"] floating disable
+#for_window [class="Upwork" title="Control Panel"] floating enable
+#for_window [class="Upwork" title="Control Panel"] border normal
+#for_window [class="Upwork" title="Control Panel"] move to workspace $ws5
+for_window [class="Upwork" title="Messages"] move to workspace $ws5
+
+# https://www.reddit.com/r/i3wm/comments/52dy4m/spotify_doesnt_start_at_assigned_workspace/
+for_window [class="Spotify"] move to workspace $ws9
+
+### Autoexec
+# Keys modifications. Doesn't load without sleep
+exec --no-startup-id sleep 1 && xmodmap ~/.Xmodmap
+# Keyboard config. Caps switching layouts
+exec_always --no-startup-id setxkbmap -option grp:switch,grp:caps_toggle us,ru
+# Remember layout for every window. Notify D-Bus on layout switch
+exec --no-startup-id kbdd
+# Pick up D-Bus switch event and toggle Thinkpad system LED
+exec --no-startup-id led
+# Suspend on low battery
+exec --no-startup-id battery
+# Weather script
+exec --no-startup-id weather
+# SSD temperature
+exec --no-startup-id ssd_temp
+# Docker xdg-open support
+exec --no-startup-id xdg-open-docker 
+
+# Wallpaper
+#exec_always --no-startup-id xsetroot -solid "#333333"
+exec_always --no-startup-id feh --bg-fill ~/s/images/baphomet.jpg
+
+# Screensaving and autolock
+exec_always --no-startup-id xset s off && xset -dpms
+exec --no-startup-id xautolock -time 10 -locker 'i3lock_wrapper xautolock' -detectsleep -killer 'systemctl suspend -i' -killtime 60
+
+# Touchpad config
+exec --no-startup-id synclient HorizTwoFingerScroll=1 HorizEdgeScroll=1
+exec --no-startup-id xinput set-prop "SynPS/2 Synaptics TouchPad" "Synaptics Finger" 25 50 0
+
+# OSD notifications
+exec --no-startup-id dunst
+
+# Best Wireless manager ever
+exec --no-startup-id wicd-client --tray
+
+# Automount
+exec --no-startup-id udiskie --smart-tray
+
+# Cloud storage
+#exec_always --no-startup-id mount ~/yandexdisk
+exec --no-startup-id dropbox start
+exec --no-startup-id megasync
+
+# My precious apps
+exec --no-startup-id keepassx
+exec --no-startup-id chromium-browser
+exec --no-startup-id skype
+#exec --no-startup-id qtox
+#exec --no-startup-id ~/Telegram/Telegram
+#exec --no-startup-id /opt/viber/Viber
+exec --no-startup-id upwork
+exec --no-startup-id spotify
+
+# Terminal
+exec_always --no-startup-id urxvtd --quiet --opendisplay --fork
+exec --no-startup-id i3-msg "workspace $ws2; exec $term; workspace $ws1"

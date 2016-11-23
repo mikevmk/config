@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# i3-scripts: ThinkPad system LED as layout indicator
+# requires: kbdd, dbus
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+led_file="/proc/acpi/ibm/led"
+
+set_led() {
+    echo 0 $1 | sudo tee ${led_file} > /dev/null
+}
+
+set_led off
+
+dbus-monitor --session member=layoutChanged | while read line; do 
+    echo ${line} | grep uint32 > /dev/null || continue
+    led_status=`echo ${line} | grep uint32 | cut -d ' ' -f 2 | sed 's/0/off/g' | sed 's/1/on/g'`
+    set_led ${led_status}
+done

@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# i3-scripts: suspend on low battery
+# requires: libnotify-bin
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+sleep=30
+battery_percent_crit=5
+battery="/sys/class/power_supply/BAT0"
+# use 'energy_full' for calibrated capacity
+battery_full=`cat ${battery}/energy_full_design`
+# suspend, hibernate, hybrid-sleep, see systemd-suspend.service(8)
+suspend_mode="suspend"
+lock_command="i3lock -c 000000 -e"
+
+while :; do
+    if [ "`cat ${battery}/status`" != "Discharging" ]; then sleep ${sleep}; continue; fi
+    battery_now=`cat ${battery}/energy_now`
+    battery_percent=`expr ${battery_now} \* 100 \/ ${battery_full}`
+    if [ ${battery_percent} -gt ${battery_percent_crit} ]; then sleep ${sleep}; continue; fi
+    /usr/bin/notify-send --urgency=critical --expire-time=9000 \
+    "Battery low (${battery_percent}%). Suspending system in 10 sec"
+    sleep 10
+    if [ "`cat ${battery}/status`"  = "Charging" ]; then
+        /usr/bin/notify-send --expire-time=5000 \
+        "Suspending canceled - battery is charging"
+        continue
+    fi
+    ${lock_command}
+    systemctl ${suspend_mode} -i
+done

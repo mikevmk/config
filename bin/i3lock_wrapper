@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# i3-scripts: i3lock wrapper 
+# requires: x11-utils
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+# Check if they are in fullscreen mode
+application_list="chromium|firefox|mpv|vlc|feh"
+
+lock_screen() {
+    killall -SIGUSR1 dunst
+    i3lock -c 000000 -e -n
+    killall -SIGUSR2 dunst
+}
+
+check_fullscreen() {
+    fullscreen=0
+    for win_id in `xwininfo -tree -root | egrep -i "(${application_list})" | awk '{ print $1 }'`; do
+       xprop -id ${win_id} | grep _NET_WM_STATE_FULLSCREEN > /dev/null 
+       if [ $? -eq 0 ]; then fullscreen=1; break; fi
+    done
+    return ${fullscreen}
+}
+
+case $1 in
+    xautolock) check_fullscreen && lock_screen ;;
+    *) lock_screen ;;
+esac

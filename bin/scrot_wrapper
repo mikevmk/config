@@ -1,0 +1,51 @@
+#!/bin/sh
+
+# i3-scripts: scrot wrapper
+# requires: scrot, feh, jq, zenity, curl, xclip, libnotify-bin
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+sharing_server='http://img.ziggi.org'
+api_url='/api/upload.php'
+save_dir="$HOME/s/images/shots"
+
+case $1 in
+    root) scrot_opts="" ;;
+    window) scrot_opts="--focused" ;;
+    region) scrot_opts="--select --delay 1" ;;
+    *) echo "Usage: `basename $0` <root|window|region>"; exit 1 ;;
+esac
+
+screenshot_file=`mktemp /tmp/XXXXXXXXXXX.png`
+scrot ${scrot_opts} ${screenshot_file}
+feh --scale-down ${screenshot_file}
+zenity --question --text='Share it?'
+if [ $? -eq 0 ]; then
+    json_response=`mktemp /tmp/XXXXXXXXXXX.json`
+    curl -F files[]=@${screenshot_file} ${sharing_server}${api_url} > ${json_response}
+    error=`jq '.[].error.upload + .[].error.type + .[].error.size' ${json_response}`
+    if [ ${error} -gt 0 ]; then
+        notify-send --urgency=critical --expire-time=4000 \
+        "Failed to share screenshot, screenshot saved as ${screenshot_file}, server response saved as ${json_response}"
+        exit 1
+    fi
+    url="${sharing_server}/`jq -r .[].url ${json_response}`"
+    rm ${screenshot_file} ${json_response}
+    echo ${url} | xclip -selection clipboard
+    echo ${url} | xclip -selection primary
+    notify-send --urgency=low --expire-time=1000 \
+    "URL copied"
+#    xdg-open ${url}
+else
+    zenity --question --text='Save it?'
+    if [ $? -eq 0 ]; then
+        mkdir -p ${save_dir}
+        screenshot_file_save="${save_dir}/`date '+%s'`.png"
+        mv ${screenshot_file} ${screenshot_file_save}
+        echo ${screenshot_file_save} | xclip -selection clipboard
+        echo ${screenshot_file_save} | xclip -selection primary
+        notify-send --urgency=low --expire-time=1000 \
+        "File location copied"
+    else
+        rm ${screenshot_file}
+    fi
+fi

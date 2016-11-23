@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# i3-scripts: clipboard processor
+# requires: xclip, xdg-utils, wget, mpv
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+input_text="`xclip -o`"
+
+# Watch 'echo.msk.ru setevizor' recorded translations
+watch_echo() {
+    source=`wget -FqO- $1 | egrep '(meta property="og:title"|<strong class="red">|videos)'`
+
+    title=`printf "${source}" | grep 'meta property="og:title"' | cut -d '"' -f 4`\ `printf "${source}" | grep '<strong class="red">' | cut -d '>' -f 2 | cut -d '<' -f 1`
+    semis_url_1=`printf "${source}" | grep videos | cut -d '"' -f 2`
+    semis_url_2=`wget -FqO- ${semis_url_1} | grep --binary-files=text record | cut -d '"' -f 8`
+    video_url=`wget -FqO- ${semis_url_2} | grep --binary-files=text playlist.m3u8 | head -1 | cut -d '"' -f 2`
+
+    mpv --title="${title}" ${video_url} &
+}
+
+case "${input_text}" in
+    http://echo.msk.ru/*) watch_echo "${input_text}" ;;
+    http://*|https://*) xdg-open "${input_text}" ;;
+    *) xdg-open https://www.google.com/search?q="${input_text}" ;;
+esac

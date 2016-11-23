@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# i3-scripts: i3status wrapper
+# requires: jq
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+ssd_temp_crit=70
+max_age=600
+
+uid=`id -u`
+skip_lines=3
+weather_file="/run/user/${uid}/weather"
+ssd_temp_file="/run/user/${uid}/ssd_temp"
+red="#FF0000"
+yellow="#FFFF00"
+white="#FFFFFF"
+
+i3status -c ~/.config/i3/i3status | while read line; do
+    if [ ${skip_lines} -gt 0 ]; then echo ${line}; skip_lines=`expr ${skip_lines} - 1`; continue; fi 
+
+    weather=`cat ${weather_file}`
+    ssd_temp=`cat ${ssd_temp_file}`
+
+    color_weather=${white}
+    color_ssd_temp=${white}
+    current_timestamp=`date '+%s'`
+    weather_timestamp=`stat -c '%Y' ${weather_file}`
+    ssd_temp_timestamp=`stat -c '%Y' ${ssd_temp_file}`
+    weather_age=`expr ${current_timestamp} - ${weather_timestamp}`
+    ssd_temp_age=`expr ${current_timestamp} - ${ssd_temp_timestamp}`
+    if [ ${weather_age} -ge ${max_age} ]; then color_weather=${yellow}; fi
+    if [ ${ssd_temp_age} -ge ${max_age} ]; then color_ssd_temp=${yellow}; fi
+    if [ ${ssd_temp} -ge ${ssd_temp_crit} ]; then color_ssd_temp=${red}; fi
+
+    echo ${line} | sed 's/^,//g' \
+    | jq -c --arg weather "${weather}" \
+    --arg ssd_temp "${ssd_temp}" \
+    --arg color_ssd_temp "${color_ssd_temp}" \
+    '[{name:"weather",markup:"none",full_text:$weather},
+    {name:"ssdtemp",markup:"none",full_text:$ssd_temp,color:$color_ssd_temp}]
+    + .' | sed 's/^/,/g'
+done

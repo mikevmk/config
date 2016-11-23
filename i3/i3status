@@ -1,0 +1,35 @@
+general {
+        output_format = i3bar
+        colors = true
+        interval = 1
+}
+
+order += "volume master"
+order += "battery 0"
+order += "load"
+order += "time"
+
+cpu_usage {
+        format = "%usage"
+}
+
+battery 0 {
+        format = "⚡ %percentage"
+        format_down = "No battery"
+        integer_battery_capacity = true
+}
+
+time {
+        format = "%a %d %b %H:%M"
+}
+
+load {
+        format = "%1min"
+}
+
+volume master {
+   format = "♪ %volume"
+   device = "default"
+   mixer = "Master"
+   mixer_idx = 0
+}

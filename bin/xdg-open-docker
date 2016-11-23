@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# docker-scripts: xdg-open support for dockers
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+xdg_open_dir=/run/user/`id -u`/xdg-open-docker
+
+while :; do
+    if [ `ls ${xdg_open_dir} | wc -l` -gt 0 ]; then 
+        for file in ${xdg_open_dir}/*; do
+            xdg-open `cat $file`
+            rm ${file}
+        done
+    else
+        sleep 1
+    fi
+done

@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# i3-scripts: adjust brightness
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+step=$2
+brightness_file=/sys/class/backlight/intel_backlight/brightness
+max_brightness_file=/sys/class/backlight/intel_backlight/max_brightness
+current_brightness=`cat ${brightness_file}`
+max_brightness=`cat ${max_brightness_file}`
+
+set_brightness() {
+# Bloody systemd hangs if we use sudo too often
+#    echo $1 | sudo tee ${brightness_file} > /dev/null
+    if [ `stat -c '%a' /sys/class/backlight/intel_backlight/brightness` -ne 666 ]; then
+        sudo chmod 666 /sys/class/backlight/intel_backlight/brightness
+    fi
+    echo $1 > ${brightness_file}
+}
+
+case $1 in
+    decrease)
+        new_brightness=`expr ${current_brightness} - ${step}`
+        if [ ${new_brightness} -lt 0 ]; then new_brightness=0; fi
+        set_brightness ${new_brightness}
+    ;;
+    increase)
+        new_brightness=`expr ${current_brightness} + ${step}`
+        if [ ${new_brightness} -gt ${max_brightness} ]; then new_brightness=${max_brightness}; fi
+        set_brightness ${new_brightness}
+    ;;
+    *)
+        echo "Usage: `basename $0` <increase|decrease> <step>"
+    ;;
+esac

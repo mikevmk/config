@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# i3-scripts: encrypt, sign, decrypt mail
+# requires: gnupg, xclip, zenity, libnotify-bin
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+default_key='47D0A70C'
+
+input_text_header="`xclip -o | head -1`"
+
+clean_exit() {
+    rm -f ${encrypted_tmp_file} ${decrypted_tmp_file} ${decrypted_tmp_file}.err
+    exit
+}
+
+decrypt_message() {
+    encrypted_tmp_file=`mktemp /tmp/XXXXXXXXXXX.gpg`
+    decrypted_tmp_file=`mktemp /tmp/XXXXXXXXXXX.txt`
+    xclip -o > ${encrypted_tmp_file}
+    gpg --default-key=${default_key} --decrypt ${encrypted_tmp_file} \
+    > ${decrypted_tmp_file} 2>${decrypted_tmp_file}.err
+    if [ $? -eq 0 ]; then
+        echo "--------Decrypted message below--------" >> ${decrypted_tmp_file}.err
+        cat ${decrypted_tmp_file} >> ${decrypted_tmp_file}.err
+        zenity --text-info --width=1000 --height=500 \
+        --title="Decrypted message" \
+        --ok-label=Copy --cancel-label=Discard \
+        --filename=${decrypted_tmp_file}.err
+        if [ $? -eq 0 ]; then
+            xclip -selection clipboard ${decrypted_tmp_file}
+            xclip -selection primary ${decrypted_tmp_file}
+        fi
+    else
+        notify-send --urgency=critical --expire-time=1000 "FAILED: `cat ${decrypted_tmp_file}.err`"
+    fi
+    clean_exit
+}
+
+encrypt_message() {
+    encrypted_tmp_file=`mktemp /tmp/XXXXXXXXXXX.gpg`
+    decrypted_tmp_file=`mktemp /tmp/XXXXXXXXXXX.txt`
+    xclip -o > ${decrypted_tmp_file}
+    contact_keys="`gpg --list-public-keys  | grep @ \
+    | awk '{ print "false " $NF }' | tr -d '<>' | tr '\n' ' '`"
+    recipient_email=`zenity --width 400 --height 300 --list --radiolist \
+    --title='Known PGP keys' --text='Select recipient' \
+    --column=check --column=email ${contact_keys}` || clean_exit
+    gpg --encrypt --sign --armor --output - \
+    --trust-model always --recipient ${recipient_email} \
+    ${decrypted_tmp_file} > ${encrypted_tmp_file}
+    xclip -selection clipboard ${encrypted_tmp_file}
+    xclip -selection primary ${encrypted_tmp_file}
+    notify-send --expire-time=1000 "Copied to clipboard"
+    clean_exit
+}
+
+todo_message() {
+    notify-send --expire-time=1000 "Unsupported PGP header"
+}
+
+case ${input_text_header} in
+    -----BEGIN\ PGP\ MESSAGE*) decrypt_message ;;
+    -----BEGIN\ PGP*) todo_message ;;
+    *) encrypt_message ;;
+esac

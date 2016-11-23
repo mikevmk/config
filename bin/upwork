@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# docker-scripts: upwork
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+uid=`id -u`
+container_user=upwork
+old_id=`docker ps -aq --filter name=upwork`
+
+if [ -z $old_id ]; then
+    # Backup profile
+    rsync -a $HOME/.Upwork/ $HOME/.Upwork.bak
+
+    # Sync to RAM
+    rsync -a --del $HOME/.Upwork /run/user/${uid}/
+
+    # Prepare xdg-open dir
+    mkdir -p /run/user/${uid}/xdg-open-docker
+
+    docker run \
+        --cpuset-cpus 0 \
+        --memory 512mb \
+        -u ${uid} \
+        -e DISPLAY \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -e PULSE_SERVER=/run/user/${uid}/pulse/native \
+        -v /run/user/${uid}/pulse:/run/user/${uid}/pulse \
+        -v /dev/shm:/dev/shm \
+        -v $HOME/.pulse:/home/${container_user}/.pulse \
+        -v $HOME/.pulse-cookie:/home/${container_user}/.pulse-cookie \
+        -v $HOME/.pki:/home/${container_user}/.pki \
+        -v $HOME/.config/cef_user_data:/home/${container_user}/.config/cef_user_data \
+        -v /run/user/${uid}/.Upwork:/home/${container_user}/.Upwork \
+        -v /var/tmp/Upwork:/var/tmp/Upwork \
+        -v /run/user/${uid}/xdg-open-docker:/run/user/${uid}/xdg-open-docker \
+        --name upwork \
+        mike/upwork
+
+    # Profile backsync
+    rsync -a --del /run/user/${uid}/.Upwork/ $HOME/.Upwork/
+
+    # Clean up
+    docker rm `docker ps -aq --filter name=upwork`
+else
+    notify-send "Upwork already running!"
+fi

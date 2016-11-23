@@ -1,0 +1,13 @@
+[Unit]
+Description=Turns LED off on resume
+After=suspend.target
+
+[Service]
+User=root
+Type=oneshot
+ExecStart=/bin/sh -c 'echo 0 off > /proc/acpi/ibm/led'
+TimeoutSec=0
+StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target sleep.target

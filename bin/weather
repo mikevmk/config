@@ -1,0 +1,61 @@
+#!/bin/sh
+
+# i3-scripts: weather for i3status
+# requires: jq, bc, wget
+# powered by: OpenWeatherMap https://openweathermap.org
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+# Delay between requests
+sleep=300
+
+# https://openweathermap.org/api
+api_key="dbe22ea9bf28d71db957c02fed99f21d"
+# http://openweathermap.org/help/city_list.txt
+city="504341"
+format="metric"
+
+if [ "${format}" = "metric" ]; then 
+    degree="°C"
+elif [ "${format}" = "imperial" ]; then 
+    degree="°F"
+else 
+    degree="°K"
+fi
+
+weather_url="http://api.openweathermap.org/data/2.5/weather?id=${city}&appid=${api_key}&units=${format}"
+weather_file=/run/user/`id -u`/weather
+
+while :; do
+    weather_info=`wget -qO- "${weather_url}"`
+    [ -z "${weather_info}" ] && sleep 10 && continue
+    weather_main=`echo "${weather_info}" | jq -r '.weather[0].main'`
+    weather_temp=`echo "${weather_info}" | jq '.main.temp'`
+    weather_wind_speed=`echo "${weather_info}" | jq '.wind.speed'`
+    weather_wind_deg=`echo "${weather_info}" | jq '.wind.deg'`
+    weather_wind_direction=`echo "(${weather_wind_deg}/45)+.5" | bc -l | cut -d '.' -f 1`
+
+    case ${weather_wind_direction} in
+        0) wind_icon="🡫" ;;
+        1) wind_icon="🡯" ;;
+        2) wind_icon="🡨" ;;
+        3) wind_icon="🡬" ;;
+        4) wind_icon="🡩" ;;
+        5) wind_icon="🡭" ;;
+        6) wind_icon="🡪" ;;
+        7) wind_icon="🡮" ;;
+        *) wind_icon="NA" ;;
+    esac
+
+    case ${weather_main} in
+        Snow)           weather_icon="❄" ;;
+        Rain|Drizzle)   weather_icon="⛈" ;;
+        Clouds)         weather_icon="☁️" ;;
+        Thunderstorm)   weather_icon="⚡" ;;
+        Mist)           weather_icon="🌫" ;;
+        Clear)          weather_icon="☀" ;;
+        *)              weather_icon="${weather_main} " ;;
+    esac
+
+    echo "${weather_icon}${weather_temp}${degree} ${wind_icon}${weather_wind_speed}" > ${weather_file}
+    sleep ${sleep}
+done
