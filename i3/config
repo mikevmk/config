@@ -137,6 +137,8 @@ bindsym $super+Shift+R restart
 bindsym $super+Shift+E exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 ### Controls with external payload
+# mouse toggle
+bindsym $super+m exec mouse
 # start a terminal
 #bindsym $super+Return exec i3-sensible-terminal
 bindsym $super+Return exec $term
@@ -173,6 +175,9 @@ bindsym $super+g exec process_text
 # GPG
 bindsym $super+c exec process_gpg
 
+# KeepassX
+bindsym $super+k scratchpad show
+
 ### i3bar/i3status config
 bar {
         status_command i3status_wrapper
@@ -195,6 +200,9 @@ assign [class="^TeamViewer"] $ws3
 # gambler.ru java game
 assign [class="^gclient-GClientMain$"] $ws7
 
+
+for_window [class="^gclient-GClientMain$"] border normal
+
 for_window [class="^TeamViewer$"] floating disable
 #for_window [class="Upwork" title="Control Panel"] floating enable
 #for_window [class="Upwork" title="Control Panel"] border normal
@@ -204,14 +212,13 @@ for_window [class="Upwork" title="Messages"] move to workspace $ws5
 # https://www.reddit.com/r/i3wm/comments/52dy4m/spotify_doesnt_start_at_assigned_workspace/
 for_window [class="Spotify"] move to workspace $ws9
 
+for_window [class="Keepassx"] floating enable
+for_window [class="Keepassx"] border normal
+
 ### Autoexec
-# Keys modifications. Doesn't load without sleep
-exec --no-startup-id sleep 1 && xmodmap ~/.Xmodmap
-# Keyboard config. Caps switching layouts
-exec_always --no-startup-id setxkbmap -option grp:switch,grp:caps_toggle us,ru
-# Remember layout for every window. Notify D-Bus on layout switch
+# KBD. Order matters
+exec --no-startup-id setxkbmap -option grp:caps_toggle us,ru
 exec --no-startup-id kbdd
-# Pick up D-Bus switch event and toggle Thinkpad system LED
 exec --no-startup-id led
 # Suspend on low battery
 exec --no-startup-id battery
@@ -221,6 +228,11 @@ exec --no-startup-id weather
 exec --no-startup-id ssd_temp
 # Docker xdg-open support
 exec --no-startup-id xdg-open-docker 
+# Hide mouse
+exec --no-startup-id unclutter -idle 1
+# Sync clipboards
+exec --no-startup-id autocutsel
+exec --no-startup-id autocutsel -s PRIMARY
 
 # Wallpaper
 #exec_always --no-startup-id xsetroot -solid "#333333"
@@ -249,7 +261,8 @@ exec --no-startup-id dropbox start
 exec --no-startup-id megasync
 
 # My precious apps
-exec --no-startup-id keepassx
+exec keepassx
+exec --no-startup-id sleep 2; i3-msg '[class="Keepassx"] move scratchpad'
 exec --no-startup-id chromium-browser
 exec --no-startup-id skype
 #exec --no-startup-id qtox

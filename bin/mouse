@@ -1,0 +1,10 @@
+#!/bin/sh
+
+resolution="1366 768"
+
+if [ `synclient | grep TouchpadOff | awk '{ print $3 }'` -eq 0 ]; then
+    xdotool mousemove ${resolution}
+    synclient TouchpadOff=1
+else
+    synclient TouchpadOff=0
+fi

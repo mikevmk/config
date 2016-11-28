@@ -35,7 +35,7 @@ while :; do
     weather_wind_direction=`echo "(${weather_wind_deg}/45)+.5" | bc -l | cut -d '.' -f 1`
 
     case ${weather_wind_direction} in
-        0) wind_icon="🡫" ;;
+        0|8) wind_icon="🡫" ;;
         1) wind_icon="🡯" ;;
         2) wind_icon="🡨" ;;
         3) wind_icon="🡬" ;;

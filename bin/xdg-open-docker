@@ -4,6 +4,7 @@
 # 2016 Mike Kuznetsov <mike4gg@gmail.com>
 
 xdg_open_dir=/run/user/`id -u`/xdg-open-docker
+mkdir -p ${xdg_open_dir}
 
 while :; do
     if [ `ls ${xdg_open_dir} | wc -l` -gt 0 ]; then 

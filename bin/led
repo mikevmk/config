@@ -14,6 +14,6 @@ set_led off
 
 dbus-monitor --session member=layoutChanged | while read line; do 
     echo ${line} | grep uint32 > /dev/null || continue
-    led_status=`echo ${line} | grep uint32 | cut -d ' ' -f 2 | sed 's/0/off/g' | sed 's/1/on/g'`
+    led_status=`echo ${line} | grep uint32 | cut -d ' ' -f 2 | sed 's/[0,2]/off/g' | sed 's/[1,3]/on/g'`
     set_led ${led_status}
 done

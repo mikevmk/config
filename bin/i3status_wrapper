@@ -36,7 +36,8 @@ i3status -c ~/.config/i3/i3status | while read line; do
     | jq -c --arg weather "${weather}" \
     --arg ssd_temp "${ssd_temp}" \
     --arg color_ssd_temp "${color_ssd_temp}" \
-    '[{name:"weather",markup:"none",full_text:$weather},
+    --arg color_weather "${color_weather}" \
+    '[{name:"weather",markup:"none",full_text:$weather,color:$color_weather},
     {name:"ssdtemp",markup:"none",full_text:$ssd_temp,color:$color_ssd_temp}]
     + .' | sed 's/^/,/g'
 done
