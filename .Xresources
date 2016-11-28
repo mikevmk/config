@@ -43,9 +43,14 @@ URxvt*scrollstyle: plain
 URxvt*scrollBar_right: true
 ! https://bugs.launchpad.net/ubuntu/+source/rxvt-unicode/+bug/1376105
 URxvt*scrollTtyOutput   : false
-URxvt*scrollWithBuffer  : true
+URxvt*scrollWithBuffer  : false
 URxvt*scrollTtyKeypress : true
 URxvt*iso14755: False
 
 URxvt.transparent:   true
 URxvt.shading:       20
+
+URxvt.perl-lib: /home/mike/.urxvt-perls
+URxvt.perl-ext-common: keyboard-select
+URxvt.keysym.M-Escape: perl:keyboard-select:activate
+! URxvt.keysym.M-s: perl:keyboard-select:search
