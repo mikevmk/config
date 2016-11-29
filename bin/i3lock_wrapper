@@ -10,8 +10,14 @@ application_list="chromium|firefox|mpv|vlc|feh"
 lock_screen() {
     killall -SIGUSR1 dunst
     setxkbmap us
-    i3lock -c 000000 -e -n
+    i3lock --color=000000 --ignore-empty-password --nofork
     killall -SIGUSR2 dunst
+    setxkbmap us,ru
+}
+
+lock_screen_systemd() {
+    setxkbmap us
+    i3lock --color=000000 --ignore-empty-password
     setxkbmap us,ru
 }
 
@@ -26,5 +32,6 @@ check_fullscreen() {
 
 case $1 in
     xautolock) check_fullscreen && lock_screen ;;
+    systemd) lock_screen_systemd ;;
     *) lock_screen ;;
 esac
