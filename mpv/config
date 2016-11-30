@@ -1,0 +1,21 @@
+# Write your default config options here!
+softvol=yes
+#softvol-max=800
+volume-max=800
+slang=rus
+alang=eng,fre,jpn
+stop-screensaver=yes
+#sub-scale=-3
+sub-text-font-size=45
+sub-codepage=enca:ru:cp1251
+ao=pulse
+audio-channels=2
+vo=opengl-hq
+no-audio-display
+
+[protocol.dvdnav]
+profile-desc="профиль для dvdnav:// потоков"
+dvd-device=/dev/cdrom
+input-cursor=yes
+#nocache=yes
+

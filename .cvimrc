@@ -1,0 +1,24 @@
+set smoothscroll
+let scrollduration=300
+let scrollstep=300
+let langmap = "ёйцукенгшщзхъфывапролджэячсмитьбюЁЙЦУКЕHГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.~QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>"
+let completionengines = ['google', 'googlelucky', 'duckduckgo']
+map <Leader>a :open google<space>
+let searchengine googlelucky = "https://www.google.co.uk/search?aq=t&btnI=I%27m+Feeling+Lucky&q=%s"
+map l :tabnew googlelucky<space>
+map <Leader>l :open googlelucky<space>
+let searchengine duckduckgo = "https://duckduckgo.com/?kae=t&k1=-1&kc=-1&kh=-1&q=%s"
+unmap d
+map d :tabnew duckduckgo<space>
+map <Leader>d :open duckduckgo<space>
+map mm fullImageHint
+site '*://*.inoreader.com/*' {
+      unmap j
+      unmap k
+      unmap b
+      unmap r
+}
+map [ previousTab
+map ] nextTab
+map { moveTabLeft
+map } moveTabRight

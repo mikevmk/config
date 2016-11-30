@@ -5,6 +5,7 @@
 
 uid=`id -u`
 container_user=upwork
+docker ps -a --filter name=upwork | grep Exited > /dev/null && docker rm `docker ps -aq --filter name=upwork`
 old_id=`docker ps -aq --filter name=upwork`
 
 if [ -z $old_id ]; then

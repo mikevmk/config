@@ -5,6 +5,7 @@
 
 uid=`id -u`
 container_user=skype
+docker ps -a --filter name=skype | grep Exited > /dev/null && docker rm `docker ps -aq --filter name=skype`
 old_id=`docker ps -aq --filter name=skype`
 
 if [ -z ${old_id} ]; then
