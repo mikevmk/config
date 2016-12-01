@@ -34,7 +34,6 @@ PROMPT_COMMAND='echo -ne "\033]0;${?}:${PWD}\007"'
 
 export EDITOR=vim
 
-alias rollback="sudo apt purge `tail -2 /var/log/apt/history.log | head -1 | tr ' ' '\n' | egrep -v '(\(|\)|Install:)' | tr '\n' ' '`"
 alias up='sudo apt update && sudo apt dist-upgrade && sudo apt autoremove --purge'
 
 alias vim='vim -p'
@@ -48,6 +47,10 @@ alias ydisk='sudo mount.davfs https://webdav.yandex.ru /home/mike/yandexdisk -o 
 
 #alias work='xrandr --output eDP1 --auto --output VGA1 --auto --left-of eDP1'
 #alias home='xrandr --output VGA1 --off --output eDP1 --auto'
+
+rollback() {
+    sudo apt purge `tail -2 /var/log/apt/history.log | head -1 | tr ' ' '\n' | egrep -v '(\(|\)|Install:)' | tr '\n' ' '`
+}
 
 s() {
     echo -ne "\033]0;${1}\007"
