@@ -3,6 +3,7 @@
 * i3/config - i3wm config
 * .Xresources - rxvt-unicode resources
 * thinkpad-led-off.service - on-resume fix
+* i3lock-on-suspend.service - on-sleep screen lock
 
 ## Dockerfiles
 
@@ -16,6 +17,7 @@
  * i3lock_wrapper - support for xautolock + fullscreen
  * i3status_wrapper - jq-based adding data
  * led - ThinkPad LED as kb layout indicator
+ * mouse - toggle mouse
  * process_gpg - encrypt/decrypt mail
  * process_text - fast URL opening + googling
  * scrot_wrapper - take screenshot and upload
