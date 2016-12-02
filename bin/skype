@@ -21,10 +21,8 @@ if [ -z ${old_id} ]; then
         -v /etc/machine-id:/etc/machine-id \
         -v /var/lib/dbus:/var/lib/dbus \
         -e PULSE_SERVER=/run/user/${uid}/pulse/native \
-        -v /dev/shm:/dev/shm \
         -v /run/user/${uid}/pulse:/run/user/${uid}/pulse \
-        -v $HOME/.pulse:/home/${container_user}/.pulse \
-        -v $HOME/.pulse-cookie:/home/${container_user}/.pulse-cookie \
+        -v $HOME/.config/pulse:/home/${container_user}/.config/pulse \
         --device /dev/video0 \
         -v $HOME/.config/skypeforlinux:/home/${container_user}/.config/skypeforlinux \
         -v /run/user/${uid}/xdg-open-docker:/run/user/${uid}/xdg-open-docker \

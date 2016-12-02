@@ -9,10 +9,14 @@ ENV DEBIAN_FRONTEND noninteractive
 COPY xdg-open-docker.sh /usr/bin/xdg-open
 RUN chmod +x /usr/bin/xdg-open
 
+RUN apt update && \
+    apt install -y libpulse0 --no-install-recommends
+
+RUN echo "enable-shm = no" >> /etc/pulse/client.conf
+
 ADD https://go.skype.com/skypeforlinux-64-alpha.deb /tmp/skypeforlinux-64-alpha.deb
 
 RUN apt update && \
-    apt install -y libpulse0 --no-install-recommends && \
     dpkg --force-depends -i /tmp/skypeforlinux-64-alpha.deb && \
     apt install -yf --no-install-recommends && \
     rm -rf /var/lib/apt/lists/* && \

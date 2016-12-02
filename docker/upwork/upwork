@@ -5,6 +5,7 @@
 
 uid=`id -u`
 container_user=upwork
+docker ps -a --filter name=upwork | grep Exited > /dev/null && docker rm `docker ps -aq --filter name=upwork`
 old_id=`docker ps -aq --filter name=upwork`
 
 if [ -z $old_id ]; then
@@ -25,9 +26,7 @@ if [ -z $old_id ]; then
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -e PULSE_SERVER=/run/user/${uid}/pulse/native \
         -v /run/user/${uid}/pulse:/run/user/${uid}/pulse \
-        -v /dev/shm:/dev/shm \
-        -v $HOME/.pulse:/home/${container_user}/.pulse \
-        -v $HOME/.pulse-cookie:/home/${container_user}/.pulse-cookie \
+        -v $HOME/.config/pulse:/home/${container_user}/.config/pulse \
         -v $HOME/.pki:/home/${container_user}/.pki \
         -v $HOME/.config/cef_user_data:/home/${container_user}/.config/cef_user_data \
         -v /run/user/${uid}/.Upwork:/home/${container_user}/.Upwork \
