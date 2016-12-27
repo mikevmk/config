@@ -14,12 +14,9 @@ api_key="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 city="504341"
 format="metric"
 
-if [ "${format}" = "metric" ]; then 
-    degree="°C"
-elif [ "${format}" = "imperial" ]; then 
-    degree="°F"
-else 
-    degree="°K"
+if	[ "${format}" = "metric"    ];	then	degree="°C"
+elif	[ "${format}" = "imperial"  ];	then	degree="°F"
+else						degree="°K"
 fi
 
 weather_url="http://api.openweathermap.org/data/2.5/weather?id=${city}&appid=${api_key}&units=${format}"
@@ -51,7 +48,7 @@ while :; do
         Rain|Drizzle)   weather_icon="⛈" ;;
         Clouds)         weather_icon="☁️" ;;
         Thunderstorm)   weather_icon="⚡" ;;
-        Mist)           weather_icon="🌫" ;;
+        Fog|Mist)           weather_icon="🌫" ;;
         Clear)          weather_icon="☀" ;;
         *)              weather_icon="${weather_main} " ;;
     esac

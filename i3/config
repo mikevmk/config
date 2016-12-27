@@ -11,7 +11,7 @@ set $alt Mod1
 set $ws1 1: web
 set $ws2 2: term
 set $ws3 3: remote
-set $ws4 4
+set $ws4 4: mail
 set $ws5 5: msgs
 set $ws6 6: virt
 set $ws7 7: games
@@ -138,6 +138,8 @@ bindsym $super+Shift+E exec "i3-nagbar -t warning -m 'You pressed the exit short
 ### Controls with external payload
 # mouse toggle
 bindsym $super+m exec mouse
+# right click
+bindsym $alt+m exec xdotool click 3
 # start a terminal
 #bindsym $super+Return exec i3-sensible-terminal
 bindsym $super+Return exec $term
@@ -156,6 +158,9 @@ bindsym XF86Calculator exec pavucontrol
 # Brightness
 bindsym XF86MonBrightnessDown exec brightness decrease 200
 bindsym XF86MonBrightnessUp exec brightness increase 200
+
+# VPN
+bindsym XF86HomePage exec vpn_toggle
 
 # Lock
 bindsym XF86MyComputer exec i3lock_wrapper
@@ -195,11 +200,13 @@ assign [class="^chromium-browser$"] $ws1
 assign [class="^Firefox$"] $ws1
 assign [class="^skypeforlinux$"] $ws5
 assign [class="^Skype$"] $ws5
+assign [class="^Pidgin$"] $ws5
 assign [class="^Telegram$"] $ws5
 #assign [class="^(U|u)pwork$"] $ws5
 assign [class="^Viber"] $ws5
 assign [class="^qTox"] $ws5
 assign [class="^TeamViewer"] $ws3
+assign [class="^Thunderbird"] $ws4
 # gambler.ru java game
 assign [class="^gclient-GClientMain$"] $ws7
 
@@ -234,8 +241,8 @@ exec --no-startup-id xdg-open-docker
 # Hide mouse
 exec --no-startup-id unclutter -idle 3
 # Sync clipboards
-exec --no-startup-id autocutsel -pause 1500 -selection CLIPBOARD -fork
-exec --no-startup-id autocutsel -pause 1500 -selection PRIMARY -fork
+#exec --no-startup-id autocutsel -pause 1500 -selection CLIPBOARD -fork
+#exec --no-startup-id autocutsel -pause 1500 -selection PRIMARY -fork
 
 # Wallpaper
 #exec_always --no-startup-id xsetroot -solid "#333333"
@@ -262,12 +269,17 @@ exec --no-startup-id udiskie --smart-tray
 exec --no-startup-id dropbox start
 exec --no-startup-id megasync
 
+# Taskd notifications
+exec --no-startup-id task_notify
+
 # My precious apps
 exec keepassx
 exec --no-startup-id sleep 2; i3-msg '[class="Keepassx"] move scratchpad'
 exec --no-startup-id chromium-browser
+exec --no-startup-id veracrypt
+exec --no-startup-id thunderbird_wrapper
 exec --no-startup-id skype
-exec --no-startup-id qtox
+exec --no-startup-id pidgin
 exec --no-startup-id upwork
 exec --no-startup-id spotify
 

@@ -28,7 +28,20 @@ if [ `id -u` -eq 0 ]; then
     PS1="\[\033[01;31m\]\u\[\033[00m\] \[\033[01;34m\]\w\[\033[00m\]# "
 else
     PS1="\[\033[01;32m\]\u\[\033[00m\] \[\033[01;34m\]\w\[\033[00m\]$ "
-    ssh-add -l > /dev/null || ( echo "Unlock the god damn key!" && ssh-add )
+    if [ ! -z $DISPLAY ] && ! ssh-add -l > /dev/null; then
+	echo "Unlock the god damn key!"
+	kpcli --kdb=$HOME/Dropbox/Приложения/Keepass2Android/keepassx.kdbx --readonly \
+	--command 'xp Root/Encryption/SSH\ key\ pass\ and\ key'
+	ssh_key_password=`xclip -o`
+	echo -n | xclip -in -selection primary && echo -n | xclip -in -selection clipboard
+	expect << EOF
+spawn ssh-add
+expect "Enter passphrase"
+send "$ssh_key_password\r"
+expect eof
+EOF
+	unset ssh_key_password
+    fi
 fi
 PROMPT_COMMAND='echo -ne "\033]0;${?}:${PWD}\007"'
 
@@ -37,16 +50,20 @@ export EDITOR=vim
 alias up='sudo apt update && sudo apt dist-upgrade && sudo apt autoremove --purge'
 
 alias vim='vim -p'
-alias ls='ls --almost-all --color=auto --group-directories-first --indicator-style=slash --show-control-chars'
-alias ll='ls --format=long --human-readable'
+alias ls='ls --almost-all --color=auto --group-directories-first --indicator-style=slash --show-control-chars --human-readable'
+alias ll='ls --format=long'
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias gpg="gpg --keyserver keyserver.ubuntu.com"
 
 alias ydisk='sudo mount.davfs https://webdav.yandex.ru /home/mike/yandexdisk -o uid=mike,gid=mike'
 
+alias resolution_fix='xrandr --output eDP-1 --auto'
+
 #alias work='xrandr --output eDP1 --auto --output VGA1 --auto --left-of eDP1'
 #alias home='xrandr --output VGA1 --off --output eDP1 --auto'
+
+alias feh='feh --scale-down'
 
 rollback() {
     sudo apt purge `tail -2 /var/log/apt/history.log | head -1 | tr ' ' '\n' | egrep -v '(\(|\)|Install:)' | tr '\n' ' '`
@@ -61,7 +78,7 @@ s() {
 _s() {
     COMPREPLY=()
     local cur=${COMP_WORDS[COMP_CWORD]}
-    comp_ssh_hosts=`grep '^Host ' .ssh/config | cut -d ' ' -f 2`
+    comp_ssh_hosts=`grep '^Host ' $HOME/.ssh/config.d/* | cut -d ' ' -f 2`
     COMPREPLY=( $(compgen -W "${comp_ssh_hosts}" -- $cur) )
     return 0
 }

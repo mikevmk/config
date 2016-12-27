@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# i3-scripts: VPN toggle
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+flag=/tmp/vpn_toggle.running
+vpn=delorean
+
+if [ -f ${flag} ]; then exit 0; fi
+
+touch ${flag}
+
+if [ -f /var/run/openvpn/${vpn}.pid ] && ps -p `cat /var/run/openvpn/${vpn}.pid` > /dev/null; then
+    sudo systemctl stop openvpn@${vpn}.service
+else
+    sudo systemctl start openvpn@${vpn}.service
+fi
+
+rm ${flag}

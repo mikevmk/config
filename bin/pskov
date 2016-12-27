@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# i3-scripts: IP cameras of Pskov city
+# requires: mpv, wget, zenity
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+cam_list=`wget -qO - 'http://pskovline.tv/camers/' | egrep -o 'cam[0-9]+">.*<' | tr -d '"' | sed 's/>/_/g' | sed 's/<$//g' | sed 's/\ /_/g' | sed "s/^/false\ /g" | tr '\n' ' '`
+cam=`zenity --width 480 --height 520 --list --radiolist --title='Псков' --text='Камера' --column=check --column=cam ${cam_list} | cut -d '_' -f 1`
+mpv rtmp://citycams.pskovline.ru:1935/${cam}

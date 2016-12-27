@@ -28,7 +28,7 @@ if [ -z $old_id ]; then
         -v /run/user/${uid}/pulse:/run/user/${uid}/pulse \
         -v $HOME/.config/pulse:/home/${container_user}/.config/pulse \
         -v $HOME/.pki:/home/${container_user}/.pki \
-        -v $HOME/.config/cef_user_data:/home/${container_user}/.config/cef_user_data \
+        -v $HOME/.config/cef_user_data.upwork:/home/${container_user}/.config/cef_user_data \
         -v /run/user/${uid}/.Upwork:/home/${container_user}/.Upwork \
         -v /var/tmp/Upwork:/var/tmp/Upwork \
         -v /run/user/${uid}/xdg-open-docker:/run/user/${uid}/xdg-open-docker \

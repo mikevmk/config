@@ -15,11 +15,14 @@ watch_echo() {
     semis_url_2=`wget -FqO- ${semis_url_1} | grep --binary-files=text record | cut -d '"' -f 8`
     video_url=`wget -FqO- ${semis_url_2} | grep --binary-files=text playlist.m3u8 | head -1 | cut -d '"' -f 2`
 
-    mpv --title="${title}" ${video_url} &
+    mpv --title="${title}" ${video_url} || notify-send --urgency=critical --expire-time=1000 "Playing ${video_url} failed"
 }
 
 case "${input_text}" in
     http://echo.msk.ru/*) watch_echo "${input_text}" ;;
     http://*|https://*) xdg-open "${input_text}" ;;
-    *) xdg-open https://www.google.com/search?q="${input_text}" ;;
+    *) 
+	xdg-open https://www.google.com/search?q="${input_text}"
+	xdg-open https://duckduckgo.com/?q="${input_text}"
+    ;;
 esac

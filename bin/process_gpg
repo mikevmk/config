@@ -4,7 +4,7 @@
 # requires: gnupg, xclip, zenity, libnotify-bin
 # 2016 Mike Kuznetsov <mike4gg@gmail.com>
 
-default_key='47D0A70C'
+default_key='354A0F03'
 
 input_text_header="`xclip -o | head -1`"
 
@@ -45,8 +45,9 @@ encrypt_message() {
     recipient_email=`zenity --width 400 --height 300 --list --radiolist \
     --title='Known PGP keys' --text='Select recipient' \
     --column=check --column=email ${contact_keys}` || clean_exit
-    gpg --encrypt --sign --armor --output - \
-    --trust-model always --recipient ${recipient_email} \
+    gpg --encrypt --sign --default-key=${default_key} \
+    --armor --output - --trust-model always \
+    --recipient ${recipient_email} \
     ${decrypted_tmp_file} > ${encrypted_tmp_file}
     xclip -selection clipboard ${encrypted_tmp_file}
     xclip -selection primary ${encrypted_tmp_file}

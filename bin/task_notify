@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# i3-scripts: task notifier
+# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+
+# Delay
+sleep=1800
+
+while :; do
+    tasks="`task '( sched.before:2hours or due.before:2hours )' list 2>/dev/null | tail -n +4 | head -n -2`"
+    if [ ! -z "${tasks}" ]; then
+	notify-send --urgency=critical --expire-time=60000 "Задачи:\n${tasks}"
+    fi
+    sleep ${sleep}
+done
