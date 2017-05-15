@@ -2,18 +2,17 @@
 
 # i3-scripts: clipboard processor
 # requires: xclip, xdg-utils, wget, mpv
-# 2016 Mike Kuznetsov <mike4gg@gmail.com>
+# 2016-2017 Mike Kuznetsov <mike4gg@gmail.com>
 
 input_text="`xclip -o`"
 
 # Watch 'echo.msk.ru setevizor' recorded translations
 watch_echo() {
-    source=`wget -FqO- $1 | egrep '(meta property="og:title"|<strong class="red">|videos)'`
-
-    title=`printf "${source}" | grep 'meta property="og:title"' | cut -d '"' -f 4`\ `printf "${source}" | grep '<strong class="red">' | cut -d '>' -f 2 | cut -d '<' -f 1`
-    semis_url_1=`printf "${source}" | grep videos | cut -d '"' -f 2`
-    semis_url_2=`wget -FqO- ${semis_url_1} | grep --binary-files=text record | cut -d '"' -f 8`
-    video_url=`wget -FqO- ${semis_url_2} | grep --binary-files=text playlist.m3u8 | head -1 | cut -d '"' -f 2`
+    url=$1
+    title=`wget -FqO- ${url} | grep '<meta property="og:title"' | cut -d '"' -f 4`
+    semis_url_1=`wget -FqO- ${url} | grep 'src="http://echo.msk.ru/videos/' | cut -d '"' -f 2`
+    semis_url_2=`wget -FqO- ${semis_url_1} | grep 'data-source="http://echomsk.onlinetv.ru/widget/record' | cut -d'"' -f 8`
+    video_url=`wget -FqO- ${semis_url_2} | grep 'master.m3u8' | cut -d '"' -f 2 | sed 's!^//!http://!g'`
 
     mpv --title="${title}" ${video_url} || notify-send --urgency=critical --expire-time=1000 "Playing ${video_url} failed"
 }
